@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>MIAJ • Fazedor de Panfletos</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --navy:#1A2332; --charcoal:#2C3E50; --red:#C41E3A; --gray:#6B7280;
+    --cream:#F5F5F2; --white:#fff; --light:#E8EBF0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Open Sans',sans-serif;background:#0F1419;color:#E8EBF0;min-height:100vh;padding:24px}
+  .app{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:24px}
+  h1{font-family:'Montserrat',sans-serif;font-weight:900;letter-spacing:2px;font-size:22px;margin-bottom:4px}
+  h1 span{color:var(--red)}
+  .subtitle{font-size:12px;color:#8892a5;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
+  .panel{background:#1a2030;border:1px solid #2a3142;border-radius:12px;padding:18px;margin-bottom:14px}
+  .panel h3{font-family:'Montserrat',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#8892a5;margin-bottom:10px}
+  label{display:block;font-size:11px;color:#aab2c5;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;margin-top:10px}
+  input,select,textarea{width:100%;padding:9px 11px;background:#0f1520;border:1px solid #2a3142;border-radius:7px;color:#e8ebf0;font-family:inherit;font-size:13px}
+  textarea{resize:vertical;min-height:60px}
+  input[type=range]{padding:0}
+  .layouts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .lay-btn{padding:10px 8px;background:#0f1520;border:1px solid #2a3142;border-radius:7px;color:#aab2c5;cursor:pointer;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;transition:.2s}
+  .lay-btn:hover{border-color:var(--red)}
+  .lay-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+  .btn{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:7px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-size:12px;cursor:pointer;margin-top:8px}
+  .btn:hover{background:#a8172f}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .flyer-wrap{background:#fff;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden}
+  /* 15x21 cm ratio = 600x840 px display */
+  .flyer{width:600px;height:840px;position:relative;overflow:hidden;font-family:'Open Sans',sans-serif;background:var(--navy)}
+  .flyer *{box-sizing:border-box}
+  /* shared elements */
+  .wordmark{font-family:'Montserrat',sans-serif;font-weight:900;letter-spacing:4px;color:#fff}
+  .wordmark .j{color:var(--red)}
+  .tag{font-family:'Montserrat',sans-serif;font-weight:300;letter-spacing:3px;text-transform:uppercase;font-size:9px;color:#aab2c5}
+  .footer-bar{position:absolute;bottom:0;left:0;right:0;background:var(--red);padding:14px 28px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:11px;letter-spacing:.5px}
+  .footer-bar b{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px}
+  .ico{display:inline-block;width:14px;height:14px;border:1.5px solid #fff;border-radius:3px;margin-right:6px;vertical-align:middle}
+
+  /* LAYOUT 1: HERO */
+  .l-hero{background:linear-gradient(180deg,#1A2332 0%,#0F1723 100%)}
+  .l-hero .skyline{position:absolute;inset:0;background:
+    radial-gradient(circle at 80% 30%,rgba(196,30,58,.15),transparent 50%),
+    linear-gradient(180deg,transparent 40%,rgba(0,0,0,.4) 100%)}
+  .l-hero .skyline::before{content:"";position:absolute;bottom:200px;left:0;right:0;height:180px;
+    background:
+      linear-gradient(90deg,#0a0f18 0%,#0a0f18 8%,transparent 8.5%,transparent 10%,#0a0f18 10%,#0a0f18 18%,transparent 18.5%,transparent 20%,#0a0f18 20%,#0a0f18 32%,transparent 32.5%,transparent 34%,#0a0f18 34%,#0a0f18 50%,transparent 50.5%,transparent 52%,#0a0f18 52%,#0a0f18 68%,transparent 68.5%,transparent 70%,#0a0f18 70%,#0a0f18 82%,transparent 82.5%,transparent 84%,#0a0f18 84%,#0a0f18 100%);
+    mask:linear-gradient(180deg,transparent,#000 30%);-webkit-mask:linear-gradient(180deg,transparent,#000 30%)}
+  .l-hero .head{position:relative;padding:36px 40px 0;text-align:center}
+  .l-hero .head .wordmark{font-size:32px}
+  .l-hero .head .tag{margin-top:4px}
+  .l-hero .title{position:relative;padding:70px 40px 0;text-align:center}
+  .l-hero .title h2{font-family:'Montserrat',sans-serif;font-weight:900;font-size:54px;line-height:.95;color:#fff;letter-spacing:-1px;text-transform:uppercase}
+  .l-hero .title h2 em{font-style:normal;color:var(--red);display:block}
+  .l-hero .title p{margin-top:18px;font-size:15px;color:#c5cdde;line-height:1.5;max-width:380px;margin-left:auto;margin-right:auto}
+  .l-hero .badge{position:absolute;right:30px;top:340px;width:150px;height:150px;border-radius:50%;background:var(--red);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;border:4px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.5);transform:rotate(-8deg)}
+  .l-hero .badge small{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:300}
+  .l-hero .badge b{font-family:'Montserrat',sans-serif;font-size:34px;font-weight:900;line-height:1}
+  .l-hero .badge .mes{font-size:11px;margin-top:2px}
+  .l-hero .pills{position:absolute;bottom:100px;left:0;right:0;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:0 30px}
+  .l-hero .pills span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:20px;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+
+  /* LAYOUT 2: PROMO */
+  .l-promo{background:#fff;color:var(--navy)}
+  .l-promo .top{background:var(--navy);padding:30px 40px;text-align:center;position:relative}
+  .l-promo .top .wordmark{font-size:30px}
+  .l-promo .top .tag{color:#aab2c5;margin-top:3px}
+  .l-promo .top::after{content:"";position:absolute;left:0;right:0;bottom:-20px;height:40px;background:var(--navy);clip-path:polygon(0 0,100% 0,50% 100%)}
+  .l-promo .big{text-align:center;padding:70px 30px 0}
+  .l-promo .big h2{font-family:'Montserrat',sans-serif;font-weight:900;font-size:48px;line-height:.95;text-transform:uppercase;color:var(--navy)}
+  .l-promo .big h2 em{font-style:italic;color:var(--red);font-weight:900}
+  .l-promo .circle{margin:30px auto 0;width:280px;height:280px;border-radius:50%;background:linear-gradient(135deg,var(--red),#8b0f25);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;box-shadow:0 20px 50px rgba(196,30,58,.4)}
+  .l-promo .circle small{font-family:'Montserrat',sans-serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:300}
+  .l-promo .circle .price{display:flex;align-items:flex-start;margin-top:8px}
+  .l-promo .circle .rs{font-size:24px;margin-top:14px;font-weight:700}
+  .l-promo .circle .val{font-family:'Montserrat',sans-serif;font-size:88px;font-weight:900;line-height:.9;letter-spacing:-2px}
+  .l-promo .circle .mes{font-size:14px;letter-spacing:2px;text-transform:uppercase;margin-top:4px;opacity:.9}
+  .l-promo .sub{text-align:center;margin-top:24px;font-size:13px;color:var(--gray);padding:0 50px;line-height:1.5}
+
+  /* LAYOUT 3: SEGURADORAS */
+  .l-seg{background:var(--cream);color:var(--navy)}
+  .l-seg .head{background:var(--navy);padding:30px 40px;text-align:center}
+  .l-seg .head .wordmark{font-size:28px}
+  .l-seg .head .tag{color:#aab2c5;margin-top:3px}
+  .l-seg .body{padding:40px 40px 120px;text-align:center}
+  .l-seg .body h2{font-family:'Montserrat',sans-serif;font-weight:900;font-size:36px;line-height:1;text-transform:uppercase;color:var(--navy);margin-bottom:8px}
+  .l-seg .body h2 em{font-style:italic;color:var(--red);font-weight:900}
+  .l-seg .body p{font-size:12px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+  .l-seg .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px}
+  .l-seg .grid div{background:#fff;border:1px solid #dde2ec;border-radius:8px;padding:18px 8px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--navy);letter-spacing:.5px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+  .l-seg .stripe{background:var(--navy);color:#fff;padding:16px;border-radius:8px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase}
+  .l-seg .stripe em{font-style:italic;color:var(--red);font-weight:900;font-size:20px;display:block;margin-top:4px;letter-spacing:2px}
+
+  /* LAYOUT 4: SERVIÇOS */
+  .l-serv{background:linear-gradient(180deg,#1A2332,#0F1723);color:#fff}
+  .l-serv .head{padding:34px 40px 0;text-align:center}
+  .l-serv .head .wordmark{font-size:30px}
+  .l-serv .head .tag{color:#aab2c5;margin-top:3px}
+  .l-serv .title{text-align:center;padding:30px 40px 20px}
+  .l-serv .title h2{font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;line-height:.95;text-transform:uppercase}
+  .l-serv .title h2 em{font-style:italic;color:var(--red);font-weight:900}
+  .l-serv .cards{padding:10px 40px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .l-serv .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:18px 16px;backdrop-filter:blur(8px)}
+  .l-serv .card .num{font-family:'Montserrat',sans-serif;font-weight:900;color:var(--red);font-size:22px;line-height:1}
+  .l-serv .card b{display:block;font-family:'Montserrat',sans-serif;font-weight:900;font-size:15px;text-transform:uppercase;letter-spacing:1px;margin:8px 0 6px}
+  .l-serv .card p{font-size:11px;color:#c5cdde;line-height:1.4}
+  .l-serv .quote{margin:20px 40px 0;padding:14px 18px;border-left:3px solid var(--red);background:rgba(196,30,58,.08);font-style:italic;font-size:12px;color:#e0e6f0;line-height:1.5}
+
+  .caption{background:#1a2030;border:1px solid #2a3142;border-radius:10px;padding:16px;width:600px;color:#c5cdde;font-size:12px;line-height:1.6;white-space:pre-wrap}
+  /* photo layer - used by hero and serv layouts */
+  .photo-bg{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;z-index:0}
+  .photo-overlay{position:absolute;inset:0;background:#000;z-index:1}
+  .l-hero > *:not(.photo-bg):not(.photo-overlay),
+  .l-serv > *:not(.photo-bg):not(.photo-overlay),
+  .l-promo > *:not(.photo-bg):not(.photo-overlay),
+  .l-seg > *:not(.photo-bg):not(.photo-overlay){position:relative;z-index:2}
+  .l-promo .photo-bg,.l-promo .photo-overlay{top:140px}
+  .l-seg .photo-bg,.l-seg .photo-overlay{top:110px;bottom:60px}
+  input[type=file]{padding:6px;font-size:11px}
+  .photo-bank{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:6px}
+  .photo-bank img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:.15s;background:#0f1520}
+  .photo-bank img:hover{border-color:var(--red);transform:scale(1.05)}
+  .photo-bank img.sel{border-color:var(--red);box-shadow:0 0 0 2px rgba(196,30,58,.3)}
+  .caption b{color:#fff;display:block;margin-bottom:8px;font-family:'Montserrat',sans-serif;letter-spacing:1px;font-size:11px;text-transform:uppercase}
+  .hash{color:#6b8fff;margin-top:8px;display:block;font-size:11px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <h1>MIAJ<span>.</span> PANFLETO</h1>
+    <div class="subtitle">15×21 cm • A5 • Print ready</div>
+
+    <div class="panel">
+      <h3>Layout</h3>
+      <div class="layouts">
+        <button class="lay-btn active" data-l="hero">Hero</button>
+        <button class="lay-btn" data-l="promo">Promo</button>
+        <button class="lay-btn" data-l="seg">Seguradoras</button>
+        <button class="lay-btn" data-l="serv">Serviços</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Conteúdo</h3>
+      <label>Título principal</label>
+      <input id="f-title" value="Proteja o que importa">
+      <label>Destaque (itálico vermelho)</label>
+      <input id="f-accent" value="de verdade">
+      <label>Subtítulo / descrição</label>
+      <textarea id="f-sub">Assessoria especializada com as maiores seguradoras do Brasil. Seu seguro feito sob medida.</textarea>
+      <label>Valor (R$ / mês)</label>
+      <input id="f-price" value="89">
+    </div>
+
+    <div class="panel">
+      <h3>Foto de fundo</h3>
+      <input type="file" id="f-photo" accept="image/*">
+      <label style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">📸 Banco de fotinhas <button id="shuffle" type="button" style="background:transparent;border:1px solid var(--red);color:var(--red);padding:3px 10px;border-radius:12px;cursor:pointer;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700">🔀 renovar</button></label>
+      <div class="photo-bank" id="bank"></div>
+      <label>Posição Y <span id="yv">50</span>%</label>
+      <input type="range" id="f-y" min="0" max="100" value="50">
+      <label>Zoom <span id="zv">100</span>%</label>
+      <input type="range" id="f-zoom" min="100" max="250" value="110">
+      <label>Escurecer <span id="dv">55</span>%</label>
+      <input type="range" id="f-dark" min="0" max="90" value="55">
+      <label>Posição X <span id="xv">50</span>%</label>
+      <input type="range" id="f-x" min="0" max="100" value="50">
+    </div>
+
+    <div class="panel">
+      <h3>Contato</h3>
+      <label>Telefone</label>
+      <input id="f-phone" value="(79) 9 9999-9999">
+      <label>Instagram / Site</label>
+      <input id="f-site" value="@miajseguros • miaj.com.br">
+    </div>
+
+    <div class="panel">
+      <h3>Legenda do post</h3>
+      <textarea id="f-caption" rows="4">Seu patrimônio merece proteção de verdade. Na MIAJ você encontra as melhores seguradoras do Brasil com atendimento próximo e humano. Faça sua cotação sem compromisso!</textarea>
+    </div>
+
+    <button class="btn" id="export">⬇ Exportar PNG</button>
+  </aside>
+
+  <main class="stage">
+    <div class="flyer-wrap"><div id="flyer" class="flyer"></div></div>
+    <div class="caption">
+      <b>Legenda + Hashtags</b>
+      <span id="cap-out"></span>
+      <span class="hash">#miajseguros #corretoradeseguros #segurodecarro #segurodevida #segurodeempresa #aracaju #sergipe #protecao #tranquilidade</span>
+    </div>
+  </main>
+</div>
+
+<script>
+const S = {
+  layout:'hero',
+  title:'Proteja o que importa',
+  accent:'de verdade',
+  sub:'Assessoria especializada com as maiores seguradoras do Brasil. Seu seguro feito sob medida.',
+  price:'89',
+  phone:'(79) 9 9999-9999',
+  site:'@miajseguros • miaj.com.br',
+  caption:'',
+  photo:null, y:50, x:50, zoom:110, dark:55
+};
+
+const photoLayer = () => S.photo
+  ? `<div class="photo-bg" style="background-image:url('${S.photo}');background-position:${S.x}% ${S.y}%;background-size:${S.zoom}% auto"></div><div class="photo-overlay" style="opacity:${S.dark/100}"></div>`
+  : '';
+
+const WM = () => {
+  const dark = S.layout==='hero' || S.layout==='serv';
+  const src = dark ? 'miaj-logo-white.png' : 'miaj-logo.png';
+  return `<img src="${src}" style="height:62px;width:auto;display:block;margin:0 auto;filter:drop-shadow(0 4px 14px rgba(0,0,0,.35))">`;
+};
+const FT = () => `<div class="footer-bar"><span>📞 <b>${S.phone}</b></span><span>${S.site}</span></div>`;
+
+const layouts = {
+  hero: () => `
+    <div class="l-hero" style="width:100%;height:100%;position:relative">
+      ${photoLayer()}
+      <div class="skyline"></div>
+      <div class="head">${WM()}</div>
+      <div class="title">
+        <h2>${S.title}<em>${S.accent}</em></h2>
+        <p>${S.sub}</p>
+      </div>
+      <div class="badge"><small>a partir de</small><b>R$${S.price}</b><span class="mes">/mês</span></div>
+      <div class="pills">
+        <span>Bradesco</span><span>Porto</span><span>Azul</span><span>Itaú</span>
+        <span>Mapfre</span><span>Tokio</span><span>Allianz</span><span>HDI</span><span>Yelum</span>
+      </div>
+      ${FT()}
+    </div>`,
+  promo: () => `
+    <div class="l-promo" style="width:100%;height:100%;position:relative">
+      <div class="top">${WM()}</div>
+      ${photoLayer()}
+      <div class="big"><h2>${S.title}<br><em>${S.accent}</em></h2></div>
+      <div class="circle">
+        <small>a partir de</small>
+        <div class="price"><span class="rs">R$</span><span class="val">${S.price}</span></div>
+        <span class="mes">por mês</span>
+      </div>
+      <p class="sub">${S.sub}</p>
+      ${FT()}
+    </div>`,
+  seg: () => `
+    <div class="l-seg" style="width:100%;height:100%;position:relative">
+      <div class="head">${WM()}</div>
+      ${photoLayer()}
+      <div class="body">
+        <h2>Trabalhamos com<br><em>as maiores</em></h2>
+        <p>9 seguradoras • 1 corretora de confiança</p>
+        <div class="grid">
+          <div>BRADESCO</div><div>PORTO</div><div>AZUL</div>
+          <div>ITAÚ</div><div>MAPFRE</div><div>TOKIO</div>
+          <div>ALLIANZ</div><div>HDI</div><div>YELUM</div>
+        </div>
+        <div class="stripe">${S.title}<em>${S.accent}</em></div>
+      </div>
+      ${FT()}
+    </div>`,
+  serv: () => `
+    <div class="l-serv" style="width:100%;height:100%;position:relative">
+      ${photoLayer()}
+      <div class="head">${WM()}</div>
+      <div class="title"><h2>${S.title}<br><em>${S.accent}</em></h2></div>
+      <div class="cards">
+        <div class="card"><div class="num">01</div><b>Auto & Moto</b><p>Cobertura completa contra roubo, colisão e terceiros.</p></div>
+        <div class="card"><div class="num">02</div><b>Vida</b><p>Proteção financeira para sua família em qualquer situação.</p></div>
+        <div class="card"><div class="num">03</div><b>Residencial</b><p>Seu lar protegido contra incêndio, roubo e danos.</p></div>
+        <div class="card"><div class="num">04</div><b>Empresarial</b><p>Soluções sob medida para o seu negócio crescer seguro.</p></div>
+      </div>
+      <div class="quote">"${S.sub}"</div>
+      ${FT()}
+    </div>`
+};
+
+function render(){
+  document.getElementById('flyer').innerHTML = layouts[S.layout]();
+  document.getElementById('cap-out').textContent = S.caption;
+}
+
+document.querySelectorAll('.lay-btn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.lay-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); S.layout=b.dataset.l; render();
+});
+['title','accent','sub','price','phone','site','caption'].forEach(k=>{
+  const el=document.getElementById('f-'+k);
+  el.oninput=()=>{S[k]=el.value;render()};
+  S[k]=el.value;
+});
+
+document.getElementById('f-photo').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{S.photo=ev.target.result;render();markBank(-1)};
+  r.readAsDataURL(f);
+};
+
+const BANK_POOL=[
+  // carros
+  'photo-1492144534655-ae79c964c9d7','photo-1503376780353-7e6692767b70','photo-1533473359331-0135ef1b58bf',
+  'photo-1494976388531-d1058494cdd8','photo-1552519507-da3b142c6e3d','photo-1555215695-3004980ad54e',
+  'photo-1542362567-b07e54358753','photo-1568844293986-8d0400bd4745',
+  // família / pessoas
+  'photo-1609220136736-443140cffec6','photo-1511895426328-dc8714191300','photo-1544005313-94ddf0286df2',
+  'photo-1529156069898-49953e39b3ac','photo-1506794778202-cad84cf45f1d','photo-1600880292203-757bb62b4baf',
+  'photo-1581579438747-104c53e7b5cb','photo-1536640712-4d4c36ff0e4e',
+  // casas / residencial
+  'photo-1568605114967-8130f3a36994','photo-1564013799919-ab600027ffc6','photo-1570129477492-45c003edd2be',
+  'photo-1600585154340-be6161a56a0c','photo-1600596542815-ffad4c1539a9','photo-1512917774080-9991f1c4c750',
+  // motos
+  'photo-1558981806-ec527fa84c39','photo-1568772585407-9361f9bf3a87','photo-1571068316344-75bc76f77890',
+  'photo-1609630875171-b1321377ee65','photo-1449426468159-d96dbf08f19f',
+  // empresa / escritório
+  'photo-1497366216548-37526070297c','photo-1521737604893-d14cc237f11d','photo-1556761175-5973dc0f32e7',
+  'photo-1556761175-b413da4baf72','photo-1600880292089-90a7e086ee0c','photo-1507679799987-c73779587ccf',
+  // negócio / aperto de mão / chave
+  'photo-1521791136064-7986c2920216','photo-1556909114-f6e7ad7d3136','photo-1450101499163-c8848c66ca85',
+  'photo-1454165804606-c3d57bc86b40','photo-1542744173-8e7e53415bb0',
+  // caminhão / transporte
+  'photo-1601584115197-04ecc0da31d7','photo-1586191582056-b7f0e96556e6','photo-1506306460327-03850fc2a3bc',
+  // cidade / skyline
+  'photo-1449824913935-59a10b8d2000','photo-1518391846015-55a9cc003b25','photo-1477959858617-67f85cf4f1df',
+  // conceito / proteção
+  'photo-1534270804882-6b5048b1c1fc','photo-1518837695005-2083093ee35b','photo-1554224155-6726b3ff858f'
+];
+
+function pickBank(n=12){
+  const shuffled=[...BANK_POOL].sort(()=>Math.random()-0.5);
+  return shuffled.slice(0,n).map(id=>'https://images.unsplash.com/'+id+'?w=1200');
+}
+
+let currentBank=[];
+function renderBank(){
+  currentBank=pickBank(12);
+  bankEl.innerHTML='';
+  currentBank.forEach((u,i)=>{
+    const img=document.createElement('img');
+    img.src=u+'&h=200&fit=crop';img.dataset.i=i;
+    img.crossOrigin='anonymous';
+    img.onclick=()=>{S.photo=u+'&w=1600';render();markBank(i)};
+    bankEl.appendChild(img);
+  });
+}
+
+const bankEl=document.getElementById('bank');
+renderBank();
+document.getElementById('shuffle').onclick=renderBank;
+
+function markBank(i){
+  bankEl.querySelectorAll('img').forEach(im=>im.classList.toggle('sel',+im.dataset.i===i));
+}
+
+[['y','yv'],['x','xv'],['zoom','zv'],['dark','dv']].forEach(([k,lbl])=>{
+  const el=document.getElementById('f-'+k);
+  el.oninput=()=>{S[k]=+el.value;document.getElementById(lbl).textContent=el.value;render()};
+});
+
+document.getElementById('export').onclick=async()=>{
+  const el=document.getElementById('flyer');
+  const c=await html2canvas(el,{scale:3,backgroundColor:null,useCORS:true});
+  const a=document.createElement('a');
+  a.download=`miaj-panfleto-${S.layout}.png`;
+  a.href=c.toDataURL('image/png');a.click();
+};
+
+render();
+</script>
+</body>
+</html>
