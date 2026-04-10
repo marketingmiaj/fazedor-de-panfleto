@@ -12,7 +12,11 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Open Sans',sans-serif;background:#0F1419;color:#E8EBF0;min-height:100vh;padding:24px}
-  .app{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:24px}
+  .app{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+  aside{max-height:calc(100vh - 48px);overflow-y:auto;padding-right:8px}
+  aside::-webkit-scrollbar{width:6px}
+  aside::-webkit-scrollbar-thumb{background:#2a3142;border-radius:3px}
+  .stage-wrap{position:sticky;top:24px}
   h1{font-family:'Montserrat',sans-serif;font-weight:900;letter-spacing:2px;font-size:22px;margin-bottom:4px}
   h1 span{color:var(--red)}
   .subtitle{font-size:12px;color:#8892a5;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
@@ -129,6 +133,9 @@
   .photo-bank img.sel{border-color:var(--red);box-shadow:0 0 0 2px rgba(196,30,58,.3)}
   .preset{flex:1;padding:5px 8px;background:#0f1520;border:1px solid #2a3142;border-radius:5px;color:#aab2c5;font-size:10px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;font-weight:600;font-family:inherit}
   .preset:hover{border-color:var(--red);color:#fff}
+  .pal{padding:8px 6px;background:#0f1520;border:1px solid #2a3142;border-radius:6px;color:#aab2c5;font-size:10px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;font-weight:600;font-family:inherit}
+  .pal:hover{border-color:var(--red);color:#fff}
+  input[type=color]{height:36px;padding:2px;cursor:pointer}
   .caption b{color:#fff;display:block;margin-bottom:8px;font-family:'Montserrat',sans-serif;letter-spacing:1px;font-size:11px;text-transform:uppercase}
   .hash{color:#6b8fff;margin-top:8px;display:block;font-size:11px}
 </style>
@@ -186,6 +193,23 @@
     </div>
 
     <div class="panel">
+      <h3>🎨 Cores da marca</h3>
+      <label>Paletas rápidas</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+        <button type="button" class="pal" data-n="#1A2332" data-r="#C41E3A" data-l="#F5F5F2">MIAJ oficial</button>
+        <button type="button" class="pal" data-n="#2C3E50" data-r="#E74C3C" data-l="#ECF0F1">Charcoal</button>
+        <button type="button" class="pal" data-n="#0B1120" data-r="#C8A44E" data-l="#F8F6F1">Navy + ouro</button>
+        <button type="button" class="pal" data-n="#000000" data-r="#DC2626" data-l="#FAFAFA">Preto puro</button>
+      </div>
+      <label>Navy (fundo escuro) <span id="ncv" style="color:#8892a5;font-family:monospace">#1A2332</span></label>
+      <input type="color" id="f-colNavy" value="#1A2332">
+      <label>Vermelho (destaque) <span id="rcv" style="color:#8892a5;font-family:monospace">#C41E3A</span></label>
+      <input type="color" id="f-colRed" value="#C41E3A">
+      <label>Creme (fundo claro) <span id="lcv" style="color:#8892a5;font-family:monospace">#F5F5F2</span></label>
+      <input type="color" id="f-colLight" value="#F5F5F2">
+    </div>
+
+    <div class="panel">
       <h3>Posição dos elementos</h3>
       <label>Preço — Posição Y <span id="byv">340</span>px <em style="color:#6b7280">(hero & promo)</em></label>
       <input type="range" id="f-badgeY" min="20" max="650" value="340">
@@ -208,7 +232,7 @@
     <button class="btn" id="export">⬇ Exportar PNG</button>
   </aside>
 
-  <main class="stage">
+  <main class="stage stage-wrap">
     <div class="flyer-wrap"><div id="flyer" class="flyer"></div></div>
     <div class="caption">
       <b>Legenda + Hashtags</b>
@@ -228,6 +252,7 @@ const S = {
   sub:'Assessoria especializada com as maiores seguradoras do Brasil. Seu seguro feito sob medida.',
   price:'89', showPrice:true,
   badgeY:340, pillsY:100, circleSize:280,
+  colNavy:'#1A2332', colRed:'#C41E3A', colLight:'#F5F5F2',
   phone:'(79) 9 9999-9999',
   site:'@miajseguros • miaj.com.br',
   caption:'',
@@ -321,6 +346,30 @@ document.querySelectorAll('.lay-btn').forEach(b=>b.onclick=()=>{
   const el=document.getElementById('f-'+k);
   el.oninput=()=>{S[k]=el.value;render()};
   S[k]=el.value;
+});
+
+function applyColors(){
+  const r=document.documentElement.style;
+  r.setProperty('--navy',S.colNavy);
+  r.setProperty('--red',S.colRed);
+  r.setProperty('--cream',S.colLight);
+  document.getElementById('ncv').textContent=S.colNavy;
+  document.getElementById('rcv').textContent=S.colRed;
+  document.getElementById('lcv').textContent=S.colLight;
+  document.getElementById('f-colNavy').value=S.colNavy;
+  document.getElementById('f-colRed').value=S.colRed;
+  document.getElementById('f-colLight').value=S.colLight;
+}
+
+['colNavy','colRed','colLight'].forEach(k=>{
+  document.getElementById('f-'+k).oninput=e=>{S[k]=e.target.value;applyColors();render()};
+});
+
+document.querySelectorAll('.pal').forEach(b=>{
+  b.onclick=()=>{
+    S.colNavy=b.dataset.n;S.colRed=b.dataset.r;S.colLight=b.dataset.l;
+    applyColors();render();
+  };
 });
 
 document.querySelectorAll('.preset').forEach(b=>{
